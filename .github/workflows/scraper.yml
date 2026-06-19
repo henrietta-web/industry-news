@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         # Make sure this lists the exact packages your scraper uses!
-        run: pip install supabase feedparser requests cloudscraper
+        run: pip install supabase feedparser requests cloudscraper python-dotenv
 
       - name: Run the Scraper
         # This securely passes your database keys into the Python script

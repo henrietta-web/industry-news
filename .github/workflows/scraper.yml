@@ -1,0 +1,30 @@
+name: Hourly News Scraper
+
+# This tells GitHub WHEN to run the script
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs at minute 0 of every hour
+  workflow_dispatch: # Gives you a manual "Run Now" button on GitHub
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Grab the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        # Make sure this lists the exact packages your scraper uses!
+        run: pip install supabase feedparser requests
+
+      - name: Run the Scraper
+        # This securely passes your database keys into the Python script
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: python scraper.py

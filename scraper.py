@@ -39,12 +39,17 @@ def fetch_and_store_news():
         headlines = soup.find_all(['h2', 'h3'])
         
         for hl in headlines:
+            if broadcast_count >= 6:
+                break
             link_tag = hl.find_parent('a') or hl.find('a')
             if not link_tag or not link_tag.has_attr('href'):
                 continue
                 
             title = hl.get_text(strip=True)
             if not title or len(title) < 10: # Skip tiny UI text
+                continue
+            #FILTER OUT TRAILDERS: Skip if the headline starts with or contains "Trail:"
+            if "tail:" in title.lower():
                 continue
                 
             raw_link = link_tag['href']

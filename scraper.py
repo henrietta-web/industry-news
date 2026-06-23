@@ -80,12 +80,24 @@ def fetch_and_store_news():
             else:
                 category = 'FILM' 
                 
+            # --- NEW: GRAB THE PICTURE ---
+            image_url = None
+            # Step out of the headline text to find the container holding the image
+            container = hl.find_parent('div', class_='sleeve') or hl.find_parent('div', class_='swiper-slide')
+            if container:
+                img_tag = container.find('img')
+                if img_tag:
+                    # Websites sometimes use 'data-src' to hide images, so we check both!
+                    raw_img = img_tag.get('src') or img_tag.get('data-src')
+                    if raw_img:
+                        image_url = raw_img if raw_img.startswith('http') else f"https://www.broadcastnow.co.uk{raw_img}"
+            
             article_data = {
                 "title": title,
                 "url": article_url.split('?')[0],
-                "summary": "Full article available on BroadcastNow.", # Direct scrape doesn't always have summary
+                "summary": "Full article available on BroadcastNow.", 
                 "published_at": datetime.now().isoformat(),
-                "image_url": None, # Complex to grab images accurately without knowing exact classes
+                "image_url": image_url, # <-- WE DROPPED THE NEW IMAGE URL HERE!
                 "category": category 
             }
             

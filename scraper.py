@@ -48,8 +48,8 @@ def fetch_and_store_news():
             title = hl.get_text(strip=True)
             if not title or len(title) < 10: # Skip tiny UI text
                 continue
-            #FILTER OUT TRAILDERS: Skip if the headline starts with or contains "Trail:"
-            if "tail:" in title.lower():
+            #FILTER OUT TRAILDERS: Skip if the headline starts with or contains "Trail:" or "Video:"
+            if "tail:" in title.lower() or "video:" in title.lower():
                 continue
                 
             raw_link = link_tag['href']

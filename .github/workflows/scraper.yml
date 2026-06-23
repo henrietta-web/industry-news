@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         # Make sure this lists the exact packages your scraper uses!
-        run: pip install supabase feedparser requests cloudscraper python-dotenv
+        run: pip install supabase feedparser requests cloudscraper python-dotenv beautifulsoup4
 
       - name: Run the Scraper
         env:

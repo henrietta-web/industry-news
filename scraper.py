@@ -34,13 +34,22 @@ def fetch_and_store_news():
         response = scraper.get("https://www.broadcastnow.co.uk/")
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # BroadcastNow usually puts their headlines in <h3> or <h2> tags inside links
-        # Let's grab all links that have a headline tag inside them
-        headlines = soup.find_all(['h2', 'h3'])
+        # 1. Find the specific box holding the carousel
+        carousel_box = soup.find('div', class_='picCarousel')
+        
+        # 2. Only look for headlines INSIDE that specific box
+        if carousel_box:
+            headlines = carousel_box.find_all(['h2', 'h3'])
+        else:
+            print("  -> Could not find the carousel on the page.")
+            headlines = []
+        
+        broadcast_count = 0 
         
         for hl in headlines:
             if broadcast_count >= 6:
                 break
+                
             link_tag = hl.find_parent('a') or hl.find('a')
             if not link_tag or not link_tag.has_attr('href'):
                 continue
@@ -49,7 +58,7 @@ def fetch_and_store_news():
             if not title or len(title) < 10: # Skip tiny UI text
                 continue
 
-           # 🛑 THE BLACKLIST: Block any article containing these phrases
+            # 🛑 THE BLACKLIST: Block any article containing these phrases
             bad_phrases = ["trail:", "video:", "first look:", "teaser:"]
             if any(phrase in title.lower() for phrase in bad_phrases):
                 continue
@@ -83,6 +92,7 @@ def fetch_and_store_news():
             try:
                 supabase.table("industry_news").upsert(article_data, on_conflict="url").execute()
                 print(f"  -> Added/Updated: [{category}] {title}")
+                broadcast_count += 1
             except Exception as e:
                 print(f"  -> Error: {e}")
                 
